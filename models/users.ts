@@ -6,7 +6,7 @@ import { createUserDefaults } from "./defaults"
 
 export const SELF_HOSTED_USER = {
   email: "taxhacker@localhost",
-  name: "TaxHacker",
+  name: "Billing OcelOps",
   membershipPlan: "unlimited",
 }
 

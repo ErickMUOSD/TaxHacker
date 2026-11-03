@@ -53,7 +53,7 @@ export const standardFieldRenderers: Record<string, FieldRenderer> = {
     sortable: true,
     formatValue: (transaction: Transaction & { project?: Project }) =>
       transaction.projectCode ? (
-        <Badge className="whitespace-nowrap" style={{ backgroundColor: transaction.project?.color }}>
+        <Badge className="whitespace-nowrap text-white" style={{ backgroundColor: transaction.project?.color }}>
           {transaction.project?.name || ""}
         </Badge>
       ) : (
@@ -66,7 +66,7 @@ export const standardFieldRenderers: Record<string, FieldRenderer> = {
     sortable: true,
     formatValue: (transaction: Transaction & { category?: Category }) =>
       transaction.categoryCode ? (
-        <Badge className="whitespace-nowrap" style={{ backgroundColor: transaction.category?.color }}>
+        <Badge className="whitespace-nowrap text-white" style={{ backgroundColor: transaction.category?.color }}>
           {transaction.category?.name || ""}
         </Badge>
       ) : (

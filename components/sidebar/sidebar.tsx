@@ -76,7 +76,7 @@ export function AppSidebar({
   const { open, setOpenMobile } = useSidebar()
   const pathname = usePathname()
   const { notification } = useNotification()
-  const accountTitle = profile.name || profile.email
+  const accountTitle = isSelfHosted ? config.app.title : profile.name || profile.email
   const accountSubtitle = isSelfHosted ? `Version ${config.app.version}` : profile.email
 
   // Hide sidebar on mobile when clicking an item
@@ -89,10 +89,10 @@ export function AppSidebar({
       <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader>
           <Link href="/" className="flex min-w-0 items-center gap-2">
-            <Image src="/logo/256.png" alt="Logo" className="h-10 w-10 shrink-0 rounded-lg" width={40} height={40} />
+            <Image src="/logo/mark-256.png" alt="Billing OcelOps" className="h-10 w-10 shrink-0 rounded-full" width={40} height={40} />
             <div className="grid min-w-0 flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
-              <span className="truncate font-semibold text-base text-black">{accountTitle}</span>
-              <span className="truncate text-xs text-muted-foreground">{accountSubtitle}</span>
+              <span className="truncate font-semibold text-base text-white">{accountTitle}</span>
+              <span className="truncate text-xs text-sidebar-foreground/60">{accountSubtitle}</span>
             </div>
           </Link>
         </SidebarHeader>
@@ -102,7 +102,10 @@ export function AppSidebar({
               <Upload className="h-4 w-4" />
               {open ? <span>Upload</span> : ""}
             </UploadButton>
-            <ScanButton variant="outline" className="w-full mb-2">
+            <ScanButton
+              variant="outline"
+              className="w-full mb-2 border-sidebar-border bg-transparent text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            >
               <Camera className="h-4 w-4" />
               {open ? <span>{scannerMessages.button}</span> : ""}
             </ScanButton>

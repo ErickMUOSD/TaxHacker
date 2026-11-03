@@ -19,7 +19,7 @@ export default function ProfileSettingsForm({ user }: { user: User }) {
 
       <form action={saveAction} className="space-y-8">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Your TaxHacker Profile</h3>
+          <h3 className="text-lg font-semibold">Your Billing OcelOps Profile</h3>
           <FormAvatar
             title="Avatar"
             name="avatar"
