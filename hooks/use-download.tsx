@@ -13,7 +13,17 @@ export function useDownload(options: UseDownloadOptions = {}) {
       setIsDownloading(true)
 
       const response = await fetch(url)
-      if (!response.ok) throw new Error("Download failed")
+      if (!response.ok) {
+        // Surface the server's JSON `{ error }` message when there is one
+        let message = "Download failed"
+        try {
+          const body = await response.json()
+          if (body && typeof body.error === "string") message = body.error
+        } catch {
+          // not JSON
+        }
+        throw new Error(message)
+      }
 
       // Get the filename from the Content-Disposition header
       const contentDisposition = response.headers.get("Content-Disposition")

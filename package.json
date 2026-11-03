@@ -7,7 +7,9 @@
     "node": ">=26"
   },
   "scripts": {
+    "predev": "node scripts/build-scanner-assets.mjs",
     "dev": "next dev -p 7331 --turbopack",
+    "prebuild": "node scripts/build-scanner-assets.mjs",
     "build": "next build",
     "start": "prisma migrate deploy && next start",
     "lint": "eslint .",
@@ -48,6 +50,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "exceljs": "4.4.0",
     "imap-simple": "^5.1.0",
     "jszip": "^3.10.1",
     "langchain": "^1.5.3",
@@ -73,9 +76,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
+    "@techstark/opencv-js": "4.12.0-release.1",
     "@types/node": "^26",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "esbuild": "0.28.1",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.2.10",
     "postcss": "^8.5.20",
