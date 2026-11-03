@@ -7,13 +7,14 @@ services:
       - NODE_ENV=production
       - SELF_HOSTED_MODE=true
       - UPLOAD_PATH=/app/data/uploads
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/taxhacker
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5435/taxhacker
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-}
     volumes:
       - ./data:/app/data
     restart: unless-stopped
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     security_opt:
       - no-new-privileges:true
     logging:
@@ -28,7 +29,7 @@ services:
       - NODE_ENV=production
       - SELF_HOSTED_MODE=true
       - UPLOAD_PATH=/app/data/uploads
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/taxhacker
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5435/taxhacker
       # Optional override. When unset, both containers use the same persisted secret from ./data.
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-}
     volumes:
@@ -36,8 +37,10 @@ services:
       - ./etc/crontab:/mnt/crontab:ro
     restart: unless-stopped
     depends_on:
-      - postgres
-      - app
+      postgres:
+        condition: service_healthy
+      app:
+        condition: service_started
     security_opt:
       - no-new-privileges:true
     command: ["docker-cron-entrypoint.sh"]
@@ -49,12 +52,21 @@ services:
 
   postgres:
     image: postgres:17-alpine
+    command: ["postgres", "-p", "5435"]
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=taxhacker
+      - PGPORT=5435
+    ports:
+      - "5435:5435"
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d taxhacker -p 5435"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
