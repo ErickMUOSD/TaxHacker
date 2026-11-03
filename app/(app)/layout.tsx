@@ -14,20 +14,25 @@ import { NotificationProvider } from "./context"
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | TaxHacker",
+    template: `%s | ${config.app.title}`,
     default: config.app.title,
   },
   description: config.app.description,
+  // ?v= busts the browser favicon cache after a rebrand; bump it whenever the icons change
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: [
+      { url: "/favicon.ico?v=2", sizes: "48x48" },
+      { url: "/favicon-32x32.png?v=2", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png?v=2", sizes: "16x16", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico?v=2",
+    apple: "/apple-touch-icon.png?v=2",
   },
   manifest: "/site.webmanifest",
 }
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#0A1118",
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

@@ -33,7 +33,7 @@ export async function buildTransactionsReport(input: BuildReportInput): Promise<
   const maxImages = Math.max(0, ...transactions.map((t) => attachments.get(t.id)?.images.length ?? 0))
 
   const workbook = new ExcelJS.Workbook()
-  workbook.creator = "TaxHacker"
+  workbook.creator = "Billing OcelOps"
   workbook.created = input.generatedAt ?? new Date()
 
   const sheet = workbook.addWorksheet("Transactions", { views: [{ state: "frozen", ySplit: 1 }] })
