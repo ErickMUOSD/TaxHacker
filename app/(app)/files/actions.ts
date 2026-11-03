@@ -10,6 +10,8 @@ import { revalidatePath } from "next/cache"
 export async function uploadFilesAction(formData: FormData): Promise<ActionState<null>> {
   const user = await getCurrentUser()
   const files = formData.getAll("files") as File[]
+  // Optional upload origin, whitelisted. Camera scans get a server-side sharpness check before AI analysis.
+  const source = formData.get("source") === "camera" ? "camera" : undefined
 
   // Check limits
   const totalFileSize = files.reduce((acc, file) => acc + file.size, 0)
@@ -35,7 +37,7 @@ export async function uploadFilesAction(formData: FormData): Promise<ActionState
         buffer: Buffer.from(arrayBuffer),
         filename: file.name,
         mimetype: file.type,
-        metadata: { lastModified: file.lastModified },
+        metadata: { lastModified: file.lastModified, ...(source ? { source } : {}) },
       })
     })
   )

@@ -21,6 +21,7 @@ export const settingsFormSchema = z.object({
   openai_compatible_max_concurrency: z.string().optional(),
   llm_providers: z.string().optional(),
   llm_attachment_format: z.enum(["webp", "png", "jpeg"]).optional(),
+  llm_enhance_low_contrast: z.enum(["true", "false"]).optional(),
   prompt_analyse_new_file: z.string().optional(),
   is_welcome_message_hidden: z.string().optional(),
 })

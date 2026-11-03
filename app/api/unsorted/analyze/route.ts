@@ -3,6 +3,9 @@ import { loadAttachmentsForAI } from "@/ai/attachments"
 import { buildLLMPrompt } from "@/ai/prompt"
 import { fieldsToJsonSchema } from "@/ai/schema"
 import { ActionState } from "@/lib/actions"
+import { fullPathForFile } from "@/lib/files"
+import { scannerConfig } from "@/lib/scanner/config"
+import { isSharpEnough, measureImageSharpness } from "@/lib/scanner/server"
 import { getSession, isAiBalanceExhausted, isSubscriptionExpired } from "@/lib/auth"
 import { DEFAULT_PROMPT_ANALYSE_NEW_FILE } from "@/models/defaults"
 import { getFileById } from "@/models/files"
@@ -74,6 +77,29 @@ export async function POST(request: NextRequest) {
       },
       { status: 402 }
     )
+  }
+
+  // Camera scans: re-check focus on the server so unreadable photos never reach the LLM
+  const metadata = (file.metadata ?? {}) as Record<string, unknown>
+  if (metadata.source === "camera" && file.mimetype.startsWith("image/")) {
+    let sharpness: number | null = null
+    try {
+      sharpness = await measureImageSharpness(fullPathForFile(user, file))
+    } catch (error) {
+      console.error("Sharpness check failed, continuing with analysis:", error)
+    }
+    if (sharpness !== null) {
+      console.info(`Camera scan ${file.id} sharpness: ${sharpness.toFixed(1)}`)
+      if (!isSharpEnough(sharpness)) {
+        return NextResponse.json<ActionState<AnalysisResult>>(
+          {
+            success: false,
+            error: `Photo is too blurry to read (sharpness ${Math.round(sharpness)} < ${scannerConfig.sharpness.serverMinVariance}). Please retake it.`,
+          },
+          { status: 422 }
+        )
+      }
+    }
   }
 
   let attachments

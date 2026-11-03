@@ -1,6 +1,7 @@
 "use client"
 
 import { useNotification } from "@/app/(app)/context"
+import { ScanButton } from "@/components/files/scan-button"
 import { UploadButton } from "@/components/files/upload-button"
 import {
   Sidebar,
@@ -19,10 +20,13 @@ import {
 } from "@/components/ui/sidebar"
 import { UserProfile } from "@/lib/auth"
 import config from "@/lib/config"
+import { scannerMessages } from "@/lib/scanner/messages"
 import {
+  Camera,
   ClockArrowUp,
   Coins,
   DatabaseBackup,
+  FileSpreadsheet,
   FileText,
   FolderKanban,
   FormInput,
@@ -98,6 +102,10 @@ export function AppSidebar({
               <Upload className="h-4 w-4" />
               {open ? <span>Upload</span> : ""}
             </UploadButton>
+            <ScanButton variant="outline" className="w-full mb-2">
+              <Camera className="h-4 w-4" />
+              {open ? <span>{scannerMessages.button}</span> : ""}
+            </ScanButton>
           </SidebarGroup>
           <SidebarGroup>
             <SidebarGroupContent>
@@ -120,6 +128,15 @@ export function AppSidebar({
                         <Blinker />
                       )}
                       <span></span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItemWithHighlight>
+
+                <SidebarMenuItemWithHighlight href="/reports">
+                  <SidebarMenuButton asChild>
+                    <Link href="/reports">
+                      <FileSpreadsheet />
+                      <span>Reports</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItemWithHighlight>

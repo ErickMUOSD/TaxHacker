@@ -55,6 +55,12 @@ export const DEFAULT_SETTINGS = [
     value: "webp",
   },
   {
+    code: "llm_enhance_low_contrast",
+    name: "Enhance contrast before AI analysis",
+    description: "Applies adaptive contrast (CLAHE) to images before sending them to the LLM. Helps with faded thermal receipts",
+    value: "false",
+  },
+  {
     code: "is_welcome_message_hidden",
     name: "Do not show welcome message on dashboard",
     description: "",

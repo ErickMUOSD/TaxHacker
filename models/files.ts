@@ -52,6 +52,15 @@ export const getFilesByTransactionId = cache(async (id: string, userId: string) 
   return []
 })
 
+/** Batch lookup (one query) for many transactions' attachments, e.g. when building reports. */
+export const getFilesByIds = async (ids: string[], userId: string) => {
+  if (ids.length === 0) return []
+  return await prisma.file.findMany({
+    where: { id: { in: ids }, userId },
+    orderBy: { createdAt: "asc" },
+  })
+}
+
 export const createFile = async (userId: string, data: any) => {
   return await prisma.file.create({
     data: {

@@ -104,6 +104,21 @@ export default function LLMSettingsForm({
           </div>
         )}
 
+        <div className="space-y-1">
+          <FormSelect
+            title="Enhance contrast before AI analysis"
+            name="llm_enhance_low_contrast"
+            defaultValue={settings.llm_enhance_low_contrast || "false"}
+            items={[
+              { code: "false", name: "Off (send images as they are)" },
+              { code: "true", name: "On (adaptive contrast, CLAHE)" },
+            ]}
+          />
+          <small className="text-muted-foreground">
+            Boosts faded thermal receipts before sending them to the LLM. Stored files are not changed.
+          </small>
+        </div>
+
         <FormTextarea
           title="Prompt for File Analysis Form"
           name="prompt_analyse_new_file"
