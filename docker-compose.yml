@@ -1,6 +1,10 @@
 services:
   app:
-    image: ghcr.io/vas3k/taxhacker:latest
+    # Built from this repository's code (not the upstream ghcr.io image)
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: taxhacker:local
     ports:
       - "7331:7331"
     environment:
@@ -24,7 +28,8 @@ services:
         max-file: "3"
 
   cron:
-    image: ghcr.io/vas3k/taxhacker:latest
+    # Reuses the image built by the app service
+    image: taxhacker:local
     environment:
       - NODE_ENV=production
       - SELF_HOSTED_MODE=true
