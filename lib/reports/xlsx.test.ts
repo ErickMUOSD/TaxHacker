@@ -96,3 +96,22 @@ describe("buildTransactionsReport", () => {
     expect(rows).toContainEqual(["USD", 1000, 0, 1000])
   })
 })
+
+describe("buildTransactionsReport with a column selection", () => {
+  it("only writes the selected columns, in field order, and skips attachments when excluded", async () => {
+    const selected = await buildTransactionsReport({
+      fields,
+      transactions,
+      attachments,
+      range: { from: "2026-01-01", to: "2026-01-31" },
+      columns: ["total", "name"],
+      includeAttachments: false,
+    })
+    const book = new ExcelJS.Workbook()
+    await book.xlsx.load(selected as unknown as ExcelJS.Buffer)
+    const tx = book.getWorksheet("Transactions")!
+    expect((tx.getRow(1).values as unknown[]).slice(1)).toEqual(["Name", "Total"])
+    expect(tx.getImages()).toHaveLength(0)
+    expect(tx.getRow(3).getCell(2).value).toBe(25.5)
+  })
+})

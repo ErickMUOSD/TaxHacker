@@ -11,8 +11,8 @@ datasource db {
 }
 
 model User {
-  id                  String        @id @default(uuid()) @db.Uuid
-  email               String        @unique
+  id                  String           @id @default(uuid()) @db.Uuid
+  email               String           @unique
   name                String
   avatar              String?
   settings            Setting[]
@@ -22,23 +22,24 @@ model User {
   files               File[]
   currencies          Currency[]
   transactions        Transaction[]
-  createdAt           DateTime      @default(now()) @map("created_at")
-  updatedAt           DateTime      @updatedAt @map("updated_at")
-  stripeCustomerId    String?       @map("stripe_customer_id")
-  membershipPlan      String?       @map("membership_plan")
-  membershipExpiresAt DateTime?     @map("membership_expires_at")
-  emailVerified       Boolean       @default(false) @map("is_email_verified")
-  storageUsed         Int           @default(0) @map("storage_used")
-  storageLimit        Int           @default(-1) @map("storage_limit")
-  aiBalance           Int           @default(0) @map("ai_balance")
-  businessName        String?       @map("business_name")
-  businessAddress     String?       @map("business_address")
-  businessBankDetails String?       @map("business_bank_details")
-  businessLogo        String?       @map("business_logo")
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+  stripeCustomerId    String?          @map("stripe_customer_id")
+  membershipPlan      String?          @map("membership_plan")
+  membershipExpiresAt DateTime?        @map("membership_expires_at")
+  emailVerified       Boolean          @default(false) @map("is_email_verified")
+  storageUsed         Int              @default(0) @map("storage_used")
+  storageLimit        Int              @default(-1) @map("storage_limit")
+  aiBalance           Int              @default(0) @map("ai_balance")
+  businessName        String?          @map("business_name")
+  businessAddress     String?          @map("business_address")
+  businessBankDetails String?          @map("business_bank_details")
+  businessLogo        String?          @map("business_logo")
   accounts            Account[]
   sessions            Session[]
   appData             AppData[]
   progress            Progress[]
+  reportDownloads     ReportDownload[]
 
   @@map("users")
 }
@@ -235,4 +236,21 @@ model Progress {
 
   @@index([userId])
   @@map("progress")
+}
+
+model ReportDownload {
+  id                 String   @id @default(uuid()) @db.Uuid
+  userId             String   @map("user_id") @db.Uuid
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reportType         String   @default("transactions") @map("report_type")
+  name               String
+  dateFrom           DateTime @map("date_from") @db.Date
+  dateTo             DateTime @map("date_to") @db.Date
+  columns            Json     @default("[]")
+  includeAttachments Boolean  @default(true) @map("include_attachments")
+  transactionsCount  Int      @default(0) @map("transactions_count")
+  downloadedAt       DateTime @default(now()) @map("downloaded_at")
+
+  @@index([userId, downloadedAt])
+  @@map("report_downloads")
 }

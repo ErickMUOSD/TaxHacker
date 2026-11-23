@@ -11,6 +11,10 @@ export type BuildReportInput = {
   /** Attachments per transaction id; missing entries mean "no attachments". */
   attachments: Map<string, TransactionAttachments>
   range: { from: string; to: string }
+  /** Field codes to export as columns (in field order). Omitted = every current field. */
+  columns?: string[]
+  /** When false, no attachment image columns nor the "Attachments" file list are written. Default true. */
+  includeAttachments?: boolean
   generatedAt?: Date
 }
 
@@ -28,8 +32,11 @@ const pxToPt = (px: number) => px * 0.75
  * then "Attachment 1..N" columns with embedded images and an "Attachments" file list column.
  */
 export async function buildTransactionsReport(input: BuildReportInput): Promise<Buffer> {
-  const { fields, transactions, attachments, range } = input
-  const columns = buildReportColumns(fields)
+  const { fields, transactions, range } = input
+  const includeAttachments = input.includeAttachments ?? true
+  const attachments = includeAttachments ? input.attachments : new Map<string, TransactionAttachments>()
+  const selected = input.columns ? new Set(input.columns) : null
+  const columns = buildReportColumns(fields).filter((column) => !selected || selected.has(column.code))
   const maxImages = Math.max(0, ...transactions.map((t) => attachments.get(t.id)?.images.length ?? 0))
 
   const workbook = new ExcelJS.Workbook()
@@ -49,7 +56,9 @@ export async function buildTransactionsReport(input: BuildReportInput): Promise<
       key: `attachment_${i + 1}`,
       width: reportsConfig.attachmentColumnWidth,
     })),
-    { header: "Attachments", key: "__attachments", width: reportsConfig.wideColumnWidth },
+    ...(includeAttachments
+      ? [{ header: "Attachments", key: "__attachments", width: reportsConfig.wideColumnWidth }]
+      : []),
   ]
 
   const header = sheet.getRow(1)
@@ -64,7 +73,7 @@ export async function buildTransactionsReport(input: BuildReportInput): Promise<
     const values: Record<string, unknown> = {}
     for (const column of columns) values[column.code] = cellValue(transaction, column)
     const files = attachments.get(transaction.id)
-    values.__attachments = files?.labels.join("\n") ?? ""
+    if (includeAttachments) values.__attachments = files?.labels.join("\n") ?? ""
 
     const row = sheet.addRow(values)
     row.alignment = { vertical: "top", wrapText: true }
