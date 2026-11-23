@@ -5,6 +5,21 @@ interface UseDownloadOptions {
   onError?: (error: Error) => void
 }
 
+/** Reads the filename from a Content-Disposition header, preferring the RFC 5987 `filename*` form. */
+function filenameFromDisposition(header: string | null): string | null {
+  if (!header) return null
+  const extended = header.match(/filename\*=UTF-8''([^;]+)/i)
+  if (extended) {
+    try {
+      return decodeURIComponent(extended[1].trim())
+    } catch {
+      // fall through to the plain form
+    }
+  }
+  const plain = header.match(/filename="?([^";]+)"?/i)
+  return plain ? plain[1] : null
+}
+
 export function useDownload(options: UseDownloadOptions = {}) {
   const [isDownloading, setIsDownloading] = useState(false)
 
@@ -26,8 +41,7 @@ export function useDownload(options: UseDownloadOptions = {}) {
       }
 
       // Get the filename from the Content-Disposition header
-      const contentDisposition = response.headers.get("Content-Disposition")
-      const filename = contentDisposition ? contentDisposition.split("filename=")[1].replace(/"/g, "") : defaultName
+      const filename = filenameFromDisposition(response.headers.get("Content-Disposition")) || defaultName
 
       // Create a blob from the response
       const blob = await response.blob()
